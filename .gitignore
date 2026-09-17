@@ -1,0 +1,90 @@
+# ---------------------------------------------------------------
+# Go build artifacts
+# ---------------------------------------------------------------
+# Compiled binary from: go build -o vpsentinel ./cmd/vpsentinel
+# (leading slash = repo root only, so the cmd/vpsentinel/ SOURCE dir is kept)
+/vpsentinel
+/dist/
+/bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test & coverage output
+*.test
+*.out
+coverage.*
+
+# Go workspace files (machine-local).
+# NOTE: go.mod and go.sum are NOT ignored — they must be committed.
+go.work
+go.work.sum
+
+# ---------------------------------------------------------------
+# IDE / editor
+# ---------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ---------------------------------------------------------------
+# OS
+# ---------------------------------------------------------------
+.DS_Store
+Thumbs.db
+
+# ===============================================================
+# SENSITIVE — vpsentinel output must NEVER reach a public repo.
+# Reports, baselines, integrity DBs and evidence are a map of a
+# host's weaknesses (exposed services, weak SSH, secret locations,
+# attack paths). Keep them local.
+# When you add new output, write it under one of these directories
+# or name it to match one of these patterns so it stays ignored.
+# ===============================================================
+
+# Scan reports (any format: JSON / SARIF / HTML / text)
+/reports/
+/scans/
+/output/
+/out/
+*.report
+*.report.json
+*.sarif
+report*.html
+*-report.html
+scan-*.json
+vpsentinel-report.*
+
+# Drift-detection baselines (host-specific trusted system state)
+/baselines/
+*.baseline
+baseline*.json
+
+# File-integrity (FIM) databases — hashes/metadata of host files
+/integrity/
+*.fimdb
+integrity*.db
+
+# Incident-investigator evidence collections
+/evidence/
+*.evidence
+
+# Local config that may hold host details or credentials
+.env
+.env.*
+!.env.example
+*.local.yaml
+*.local.yml
+*.local.json
+vpsentinel.local.*
+config.local.*
+
+# Secrets / private keys (belt-and-braces — never commit)
+*.pem
+*.key
+id_rsa*
+secrets.*
