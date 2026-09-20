@@ -130,4 +130,4 @@ core or the renderers.
 
 ## License
 
-Not yet chosen. Until a license is added, all rights are reserved.
+[MIT](LICENSE) © Ali Naqvi
