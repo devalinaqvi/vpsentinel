@@ -4,9 +4,9 @@ A lightweight Linux/VPS security auditing tool. It reads a server's live state �
 listening ports, SSH configuration, users and privileges, services — and reports
 misconfigurations and exposure as ranked, actionable findings.
 
-> **Status: early development (pre-alpha).** The architecture is in place; the
-> first checks are being built. It is **not yet a working scanner** — see the
-> [Roadmap](#roadmap). Interfaces and output may change without notice.
+> **Status: early release (`v0.1.0-alpha.1`).** The listening-port scan works;
+> the SSH and sudo/privilege checks are next. See the [Roadmap](#roadmap).
+> Interfaces and output may still change before `v0.1.0`.
 
 ## What it is
 
@@ -30,14 +30,14 @@ incident-investigation platform for Linux servers.
 
 ## Features
 
-Planned for the first release (`v0.1`):
+Toward the first release (`v0.1.0`):
 
-- [ ] Listening-port exposure (public vs loopback, sensitive services) — *in progress*
+- [x] Listening-port exposure (public vs loopback, sensitive services)
 - [ ] SSH configuration and authorised-key audit
 - [ ] Sudo / privilege and escalation-path checks
 - [x] Structured findings model with severity ranking
-- [ ] Pluggable check architecture (the `Check` interface + scan runner)
-- [ ] Human-readable and JSON output
+- [x] Pluggable check architecture (the `Check` interface + scan runner)
+- [x] Human-readable and JSON output
 
 Later (see the roadmap): firewall, services, Docker, and web-stack
 (Nginx/PHP/Laravel) checks; SARIF and HTML reports; and drift detection, file
@@ -45,10 +45,17 @@ integrity, attack-path analysis and incident investigation.
 
 ## Requirements
 
-- Go 1.27 or newer (to build)
-- Linux (the checks read Linux-specific interfaces such as `/proc`)
+- Linux, `x86_64` or `arm64` (the checks read Linux interfaces such as `/proc`)
+- To **run**: nothing — the released binary is statically linked
+- To **build from source**: Go 1.27 or newer
 
-## Build
+## Install
+
+**Prebuilt binary (no Go needed):** download `vpsentinel-linux-amd64` (or
+`-arm64`) from the [Releases](https://github.com/devalinaqvi/vpsentinel/releases)
+page, `chmod +x`, and run.
+
+**Build from source:**
 
 ```bash
 git clone git@github.com:devalinaqvi/vpsentinel.git
@@ -56,13 +63,13 @@ cd vpsentinel
 go build -o vpsentinel ./cmd/vpsentinel
 ```
 
-This produces a single `vpsentinel` binary (git-ignored) you can copy to any
-Linux host of the same architecture.
+This produces a single static `vpsentinel` binary (git-ignored) you can copy to
+any Linux host of the same architecture.
+
+**Running it on a server?** Follow the step-by-step
+[guide: Running VPSentinel on your VPS](docs/running-on-a-vps.md).
 
 ## Usage
-
-> The `scan` command is under construction. Today the binary only reports its
-> version; the interface below is the target for `v0.1`.
 
 ```bash
 # Audit the local host
@@ -83,16 +90,16 @@ unknown, rather than failing.
 ## Output
 
 Every check emits **findings** with a stable rule ID, a severity
-(`info` < `low` < `medium` < `high` < `critical`), the affected resource,
+(`NONE` < `LOW` < `MEDIUM` < `HIGH` < `CRITICAL`), the affected resource,
 remediation advice, and supporting evidence. Findings are sorted worst-first.
 
 Example (illustrative):
 
 ```
-[HIGH]   Database exposed to the internet — tcp/0.0.0.0:3306 (mysqld)
-         Fix: bind MySQL to 127.0.0.1, or block port 3306 at the firewall.
-[MEDIUM] Public listener — tcp/0.0.0.0:6379 (redis-server)
-         Fix: bind Redis to loopback; never expose it unauthenticated.
+[HIGH]   MySQL exposed on all interfaces — tcp/0.0.0.0:3306 (mysqld)
+         fix: Bind MySQL to 127.0.0.1, or restrict port 3306 with a firewall rule.
+[MEDIUM] Service listening on all interfaces — tcp/0.0.0.0:80 (nginx)
+         fix: If it's only needed locally, bind it to 127.0.0.1; otherwise ensure a firewall limits access.
 ```
 
 ## Roadmap
